@@ -1,11 +1,13 @@
 import {
   CommandService,
+  DataService,
+  DetailDto,
   generateId,
   getUserContext,
   IInvoke,
   VERSION_FIRST,
 } from '@mbc-cqrs-serverless/core'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 
 import { generateTodoPk, generateTodoSk, TODO_PK_PREFIX } from '../helpers'
 import { CreateTodoDto } from './dto/create-todo.dto'
@@ -16,7 +18,10 @@ import { TodoDataEntity } from './entity/todo-data.entity'
 export class TodoService {
   private readonly logger = new Logger(TodoService.name)
 
-  constructor(private readonly commandService: CommandService) {}
+  constructor(
+    private readonly commandService: CommandService,
+    private readonly dataService: DataService,
+  ) {}
 
   async create(
     createDto: CreateTodoDto,
@@ -37,6 +42,15 @@ export class TodoService {
       attributes: createDto.attributes,
     })
     const item = await this.commandService.publish(todo, opts)
+    return new TodoDataEntity(item as TodoDataEntity)
+  }
+
+  async findOne(detailDto: DetailDto): Promise<TodoDataEntity> {
+    const item = await this.dataService.getItem(detailDto)
+    if (!item) {
+      throw new NotFoundException('Task not found!')
+    }
+    this.logger.debug('item:', item)
     return new TodoDataEntity(item as TodoDataEntity)
   }
 }
