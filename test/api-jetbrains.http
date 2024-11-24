@@ -1,0 +1,85 @@
+###
+GET {{endpoint}} HTTP/1.1
+
+###
+# login
+# @name login_cognito
+POST {{cognitoEndpoint}}
+Accept: application/json
+Content-Type: application/x-amz-json-1.1
+X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth
+
+{
+  "AuthFlow": "USER_PASSWORD_AUTH",
+  "ClientId": "{{clientId}}",
+  "AuthParameters": {
+    "USERNAME": "{{admin_username}}",
+    "PASSWORD": "{{admin_password}}"
+  },
+  "ClientMetadata": {}
+}
+
+> {%
+  client.test("認証が成功する", function() {
+    client.assert(response.status === 200, "Response status is not 200");
+  });
+  client.test("トークンを保存する", function() {
+    client.assert(response.status === 200, "Response status is not 200");
+    client.global.set('ADMIN_TOKEN', response.body.AuthenticationResult.IdToken)
+  });
+%}
+
+###
+# Health
+GET {{endpoint}}
+Accept: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+### Create To-do
+POST {{endpoint}}/api/todo
+Accept: application/json
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+X-Tenant-Code: MBC
+
+{
+  "name": "Test Task 1",
+  "attributes": {
+    "description": "desc"
+  }
+}
+
+### Get To-do List
+GET {{endpoint}}/api/todo
+Accept: application/json
+Authorization: {{ADMIN_TOKEN}}
+X-Tenant-Code: MBC
+
+### Get Specific To-do item
+GET {{endpoint}}/api/todo/TODO%23MBC/1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+X-Tenant-Code: MBC
+
+### Update to-do item
+PATCH {{endpoint}}/api/todo/TODO%23MBC/1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+X-Tenant-Code: MBC
+
+{
+  "name": "First update",
+  "attributes": {
+    "dueDate": "2024-10-30T03:59:43.590Z",
+    "status": "COMPLETED"
+  }
+}
+
+### Delete todo item
+DELETE {{endpoint}}/api/todo/TASK%23MBC/1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+X-Tenant-Code: MBC

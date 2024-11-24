@@ -1,0 +1,125 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [
+          {
+            "in": "header",
+            "required": false,
+            "name": "x-tenant-code",
+            "schema": {}
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["main"]
+      }
+    },
+    "/api/todo": {
+      "post": {
+        "operationId": "TodoController_create",
+        "parameters": [
+          {
+            "in": "header",
+            "required": false,
+            "name": "x-tenant-code",
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTodoDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodoDataEntity" }
+              }
+            }
+          }
+        },
+        "tags": ["todo"]
+      }
+    }
+  },
+  "info": {
+    "title": "serverless",
+    "description": "The serverless API",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [{ "url": "http://localhost:3000/", "description": "local" }],
+  "components": {
+    "securitySchemes": {
+      "Api-Key": { "type": "apiKey", "in": "header", "name": "Authorization" }
+    },
+    "schemas": {
+      "TodoAttributes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]
+          },
+          "description": { "type": "string" },
+          "dueDate": { "type": "string" }
+        }
+      },
+      "CreateTodoDto": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "attributes": { "$ref": "#/components/schemas/TodoAttributes" }
+        },
+        "required": ["name"]
+      },
+      "TodoDataEntity": {
+        "type": "object",
+        "properties": {
+          "cpk": { "type": "string" },
+          "csk": { "type": "string" },
+          "source": { "type": "string" },
+          "requestId": { "type": "string" },
+          "createdAt": { "format": "date-time", "type": "string" },
+          "updatedAt": { "format": "date-time", "type": "string" },
+          "createdBy": { "type": "string" },
+          "updatedBy": { "type": "string" },
+          "createdIp": { "type": "string" },
+          "updatedIp": { "type": "string" },
+          "pk": { "type": "string" },
+          "sk": { "type": "string" },
+          "id": { "type": "string" },
+          "code": { "type": "string" },
+          "name": { "type": "string" },
+          "version": { "type": "number" },
+          "tenantCode": { "type": "string" },
+          "type": { "type": "string" },
+          "seq": { "type": "number" },
+          "ttl": { "type": "number" },
+          "isDeleted": { "type": "boolean" },
+          "attributes": { "$ref": "#/components/schemas/TodoAttributes" }
+        },
+        "required": [
+          "pk",
+          "sk",
+          "id",
+          "code",
+          "name",
+          "version",
+          "tenantCode",
+          "type",
+          "attributes"
+        ]
+      }
+    }
+  },
+  "security": [{ "Api-Key": [] }]
+}
