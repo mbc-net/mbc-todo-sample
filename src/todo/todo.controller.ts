@@ -8,15 +8,18 @@ import {
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
 import { CreateTodoDto } from './dto/create-todo.dto'
+import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodoDataEntity } from './entity/todo-data.entity'
 import { TodoService } from './todo.service'
 
@@ -48,5 +51,23 @@ export class TodoController {
   @Get('/:pk/:sk')
   async findOne(@Param() detailDto: DetailDto): Promise<TodoDataEntity> {
     return this.todoService.findOne(detailDto)
+  }
+
+  @Patch('/:pk/:sk')
+  async update(
+    @INVOKE_CONTEXT() invokeContext: IInvoke,
+    @Param() detailDto: DetailDto,
+    @Body() updateDto: UpdateTodoDto,
+  ) {
+    this.logger.debug('updateDto:', updateDto)
+    return this.todoService.update(detailDto, updateDto, { invokeContext })
+  }
+
+  @Delete('/:pk/:sk')
+  async remove(
+    @INVOKE_CONTEXT() invokeContext: IInvoke,
+    @Param() detailDto: DetailDto,
+  ) {
+    return this.todoService.remove(detailDto, { invokeContext })
   }
 }
