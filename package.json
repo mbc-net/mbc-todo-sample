@@ -40,7 +40,7 @@
     "generate:swagger": "nest start --entryFile generate-swagger"
   },
   "dependencies": {
-    "@mbc-cqrs-serverless/core": "^0.1.33-beta.0",
+    "@mbc-cqrs-serverless/core": "^0.1.38-beta.0",
     "@prisma/client": "^5.7.1",
     "prisma": "^5.7.1"
   },

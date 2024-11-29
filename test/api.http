@@ -40,3 +40,54 @@ X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth
 GET {{endpoint}}
 Accept: application/json
 Authorization: {{token}}
+
+### Create To-do
+POST {{apiBaseUrl}}/todo
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+X-Tenant-Code: MBC
+
+{
+  "name": "Test Task 1",
+  "attributes": {
+    "description": "desc",
+    "status": "PENDING"
+  }
+}
+
+###
+GET {{apiBaseUrl}}/todo
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+X-Tenant-Code: MBC
+
+###
+GET {{apiBaseUrl}}/todo/TODO%23MBC/1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+X-Tenant-Code: MBC
+
+###
+PATCH {{apiBaseUrl}}/todo/TODO%23MBC/1
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+X-Tenant-Code: MBC
+
+{
+  "name": "First update",
+  "attributes": {
+    "dueDate": "2024-10-30T03:59:43.590Z",
+    "status": "COMPLETED"
+  }
+}
+
+###
+DELETE {{apiBaseUrl}}/todo/TASK%23MBC/01JAFJHS7KM8ZM50X5CX4T6517
+Accept: application/json
+Content-Type: application/json
+Authorization: {{token}}
+X-Tenant-Code: MBC

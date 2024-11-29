@@ -78,7 +78,7 @@ X-Tenant-Code: MBC
 }
 
 ### Delete todo item
-DELETE {{endpoint}}/api/todo/TODO%23MBC/1
+DELETE {{endpoint}}/api/todo/TASK%23MBC/1
 Accept: application/json
 Content-Type: application/json
 Authorization: {{ADMIN_TOKEN}}
