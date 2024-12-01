@@ -47,6 +47,42 @@
         },
         "tags": ["todo"]
       }
+    },
+    "/api/todo/{pk}/{sk}": {
+      "get": {
+        "operationId": "TodoController_findOne",
+        "parameters": [
+          {
+            "name": "pk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "header",
+            "required": false,
+            "name": "x-tenant-code",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodoDataEntity" }
+              }
+            }
+          }
+        },
+        "tags": ["todo"]
+      }
     }
   },
   "info": {
