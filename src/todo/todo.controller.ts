@@ -1,5 +1,19 @@
-import { DetailDto, IInvoke, INVOKE_CONTEXT } from '@mbc-cqrs-serverless/core'
-import { Body, Controller, Get, Logger, Param, Post } from '@nestjs/common'
+import {
+  DetailDto,
+  getUserContext,
+  IInvoke,
+  INVOKE_CONTEXT,
+  SearchDto,
+} from '@mbc-cqrs-serverless/core'
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
 import { CreateTodoDto } from './dto/create-todo.dto'
@@ -10,6 +24,7 @@ import { TodoService } from './todo.service'
 @ApiTags('todo')
 export class TodoController {
   private readonly logger = new Logger(TodoService.name)
+
   constructor(private readonly todoService: TodoService) {}
 
   @Post('/')
@@ -19,6 +34,16 @@ export class TodoController {
   ): Promise<TodoDataEntity> {
     this.logger.debug('createDto:', createDto)
     return this.todoService.create(createDto, { invokeContext })
+  }
+
+  @Get('/')
+  async findAll(
+    @INVOKE_CONTEXT() invokeContext: IInvoke,
+    @Query() searchDto: SearchDto,
+  ) {
+    this.logger.debug('searchDto:', searchDto)
+    const { tenantCode } = getUserContext(invokeContext)
+    return await this.todoService.findAll(tenantCode, searchDto)
   }
 
   @Get('/:pk/:sk')
