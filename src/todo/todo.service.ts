@@ -31,6 +31,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodoCommandEntity } from './entity/todo-command.entity'
 import { TodoDataEntity } from './entity/todo-data.entity'
 import { TodoDataListEntity } from './entity/todo-data-list.entity'
+import { SequencesService } from '@mbc-cqrs-serverless/sequence'
 
 @Injectable()
 export class TodoService {
@@ -40,6 +41,7 @@ export class TodoService {
     private readonly commandService: CommandService,
     private readonly dataService: DataService,
     private readonly prismaService: PrismaService,
+    private readonly seqService: SequencesService,
   ) {}
 
   async create(
@@ -48,7 +50,15 @@ export class TodoService {
   ): Promise<TodoDataEntity> {
     const { tenantCode } = getUserContext(opts.invokeContext)
     const pk = generateTodoPk(tenantCode)
-    const sk = generateTodoSk()
+
+    const seq = await this.seqService.generateSequenceItem(
+      {
+        tenantCode: tenantCode,
+        typeCode: 'todo',
+      },
+      opts,
+    )
+    const sk = `${seq.formattedNo}`
     const todo = new TodoCommandEntity({
       pk,
       sk,

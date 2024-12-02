@@ -1,4 +1,5 @@
 import { CommandModule } from '@mbc-cqrs-serverless/core'
+import { SequencesModule } from '@mbc-cqrs-serverless/sequence'
 import { Module } from '@nestjs/common'
 
 import { TodoDataSyncRdsHandler } from './handler/todo-rds.handler'
@@ -11,6 +12,7 @@ import { TodoService } from './todo.service'
       tableName: 'todo',
       dataSyncHandlers: [TodoDataSyncRdsHandler],
     }),
+    SequencesModule,
   ],
   controllers: [TodoController],
   providers: [TodoService],
