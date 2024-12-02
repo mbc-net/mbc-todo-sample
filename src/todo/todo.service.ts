@@ -1,4 +1,5 @@
 import {
+  CommandPartialInputModel,
   CommandService,
   DataService,
   DetailDto,
@@ -8,18 +9,25 @@ import {
   toISOStringWithTimezone,
   VERSION_FIRST,
 } from '@mbc-cqrs-serverless/core'
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 
 import {
   generateTodoPk,
   generateTodoSk,
   getOrderBys,
+  parsePk,
   TODO_PK_PREFIX,
 } from '../helpers'
 import { PrismaService } from '../prisma'
 import { CreateTodoDto } from './dto/create-todo.dto'
 import { TodoSearchDto } from './dto/search-todo.dto'
+import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodoCommandEntity } from './entity/todo-command.entity'
 import { TodoDataEntity } from './entity/todo-data.entity'
 import { TodoDataListEntity } from './entity/todo-data-list.entity'
@@ -125,5 +133,63 @@ export class TodoService {
           }),
       ),
     })
+  }
+
+  async update(
+    detailDto: DetailDto,
+    updateDto: UpdateTodoDto,
+    opts: { invokeContext: IInvoke },
+  ): Promise<TodoDataEntity> {
+    const userContext = getUserContext(opts.invokeContext)
+    const { tenantCode } = parsePk(detailDto.pk)
+    if (userContext.tenantCode !== tenantCode) {
+      throw new BadRequestException('Invalid tenant code')
+    }
+    const data = (await this.dataService.getItem(detailDto)) as TodoDataEntity
+    if (!data) {
+      throw new NotFoundException('Task not found!')
+    }
+    const commandDto: CommandPartialInputModel = {
+      pk: data.pk,
+      sk: data.sk,
+      version: data.version,
+      name: updateDto.name ?? data.name,
+      isDeleted: updateDto.isDeleted ?? data.isDeleted,
+      attributes: {
+        ...data.attributes,
+        ...updateDto.attributes,
+      },
+    }
+    const item = await this.commandService.publishPartialUpdateAsync(
+      commandDto,
+      opts,
+    )
+    return new TodoDataEntity(item as TodoDataEntity)
+  }
+
+  async remove(detailDto: DetailDto, opts: { invokeContext: IInvoke }) {
+    const userContext = getUserContext(opts.invokeContext)
+    const { tenantCode } = parsePk(detailDto.pk)
+
+    if (userContext.tenantCode !== tenantCode) {
+      throw new BadRequestException('Invalid tenant code')
+    }
+
+    const data = (await this.dataService.getItem(detailDto)) as TodoDataEntity
+    if (!data) {
+      throw new NotFoundException()
+    }
+    const commandDto: CommandPartialInputModel = {
+      pk: data.pk,
+      sk: data.sk,
+      version: data.version,
+      isDeleted: true,
+    }
+    const item = await this.commandService.publishPartialUpdateAsync(
+      commandDto,
+      opts,
+    )
+
+    return new TodoDataEntity(item as any)
   }
 }

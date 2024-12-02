@@ -146,6 +146,82 @@
           }
         },
         "tags": ["todo"]
+      },
+      "patch": {
+        "operationId": "TodoController_update",
+        "parameters": [
+          {
+            "name": "pk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "header",
+            "required": false,
+            "name": "x-tenant-code",
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTodoDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodoDataEntity" }
+              }
+            }
+          }
+        },
+        "tags": ["todo"]
+      },
+      "delete": {
+        "operationId": "TodoController_remove",
+        "parameters": [
+          {
+            "name": "pk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sk",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "header",
+            "required": false,
+            "name": "x-tenant-code",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TodoDataEntity" }
+              }
+            }
+          }
+        },
+        "tags": ["todo"]
       }
     }
   },
@@ -266,6 +342,25 @@
           }
         },
         "required": ["items"]
+      },
+      "UpdateTodoAttributes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELED"]
+          },
+          "description": { "type": "string" },
+          "dueDate": { "type": "string" }
+        }
+      },
+      "UpdateTodoDto": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "isDeleted": { "type": "boolean" },
+          "attributes": { "$ref": "#/components/schemas/UpdateTodoAttributes" }
+        }
       }
     }
   },
