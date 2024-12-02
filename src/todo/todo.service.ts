@@ -9,6 +9,7 @@ import {
   toISOStringWithTimezone,
   VERSION_FIRST,
 } from '@mbc-cqrs-serverless/core'
+import { SequencesService } from '@mbc-cqrs-serverless/sequence'
 import {
   BadRequestException,
   Injectable,
@@ -19,7 +20,6 @@ import { Prisma } from '@prisma/client'
 
 import {
   generateTodoPk,
-  generateTodoSk,
   getOrderBys,
   parsePk,
   TODO_PK_PREFIX,
@@ -31,7 +31,6 @@ import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodoCommandEntity } from './entity/todo-command.entity'
 import { TodoDataEntity } from './entity/todo-data.entity'
 import { TodoDataListEntity } from './entity/todo-data-list.entity'
-import { SequencesService } from '@mbc-cqrs-serverless/sequence'
 
 @Injectable()
 export class TodoService {
