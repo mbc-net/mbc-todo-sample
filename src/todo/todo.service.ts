@@ -10,13 +10,14 @@ import {
   VERSION_FIRST,
 } from '@mbc-cqrs-serverless/core'
 import { SequencesService } from '@mbc-cqrs-serverless/sequence'
+import { TaskService } from '@mbc-cqrs-serverless/task'
 import {
   BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Prisma, TodoStatus } from '@prisma/client'
 
 import {
   generateTodoPk,
@@ -41,6 +42,7 @@ export class TodoService {
     private readonly dataService: DataService,
     private readonly prismaService: PrismaService,
     private readonly seqService: SequencesService,
+    private readonly taskService: TaskService,
   ) {}
 
   async create(
@@ -198,6 +200,17 @@ export class TodoService {
       commandDto,
       opts,
     )
+
+    if (commandDto.attributes?.status === TodoStatus.COMPLETED) {
+      await this.taskService.createTask(
+        {
+          tenantCode,
+          taskType: 'todo',
+          input: item,
+        },
+        opts,
+      )
+    }
 
     return new TodoDataEntity(item as any)
   }

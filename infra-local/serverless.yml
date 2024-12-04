@@ -147,6 +147,12 @@ functions:
           arn: ${env:LOCAL_DDB_TODO_STREAM}
           filterPatterns:
             - eventName: [INSERT]
+      - stream:
+          type: dynamodb
+          maximumRetryAttempts: 10
+          arn: ${env:LOCAL_DDB_TASKS_STREAM}
+          filterPatterns:
+            - eventName: [INSERT]
 
 stepFunctions:
   # https://goessner.net/articles/JsonPath/index.html
